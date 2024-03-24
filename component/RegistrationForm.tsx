@@ -26,7 +26,7 @@ const RegistrationForm = () => {
       <div className="max-w-md w-full px-4 py-8 bg-white shadow-md rounded-md">
         <h2 className="text-2xl font-bold mb-4 text-center">Welcome to Registration</h2>
         <p className="mb-4 text-center">
-          Kindly provide your email to get started with our platform.
+          Kindly provide your email to get started with Question Time.
         </p>
         <form onSubmit={handleFormSubmit} className="space-y-4">
           <label htmlFor="email" className="block text-sm font-medium text-gray-700">

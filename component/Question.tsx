@@ -18,12 +18,16 @@ const Question = () => {
     useCreateQuestionAndOptionsMutation();
   const [deleteQuestion] = useDeleteQuestionMutation();
   const [update] = useUpdateQuestionMutation();
-
   const [modalVisible, setModalVisible] = useState(false);
   const [questionId, setquestionId] = useState("");
+  const [editingQuestionId, setEditingQuestionId] = useState("");
 
   const handleAddOption = () => {
-    if (options.length < 5 && newOption.trim() !== "") {
+    if (
+      options.length < 5 &&
+      newOption.trim() !== "" &&
+      !options.includes(newOption)
+    ) {
       setOptions([...options, newOption]);
       setNewOption(""); // Clear input after adding option
     }
@@ -41,6 +45,9 @@ const Question = () => {
         .unwrap()
         .then(() => {
           message.success("Question created!");
+          setOptions([]);
+          setNewOption("");
+          setNewQuestion("");
         })
         .catch((error) => {
           message.error(error || "error creating question");
@@ -63,17 +70,18 @@ const Question = () => {
     setModalVisible(false);
   };
 
-  const handleCancelDelete = () => {
-    setModalVisible(false);
-  };
-  const handleUpdateQuestion = (questionId: any) => {
-    update({ question: newQuestion, questionId })
+  const handleUpdateQuestion = () => {
+    update({ question: newQuestion, questionId: editingQuestionId })
       .unwrap()
-      .then(() => {})
+      .then(() => {
+        message.success("Question updated successfully");
+        setEditingQuestionId("");
+      })
       .catch((error) => {
-        message.error(error || "error creating question");
+        message.error(error?.message || "Error updating question");
       });
   };
+
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
       <div className="mt-8">
@@ -91,7 +99,7 @@ const Question = () => {
           type="text"
           value={newOption}
           onChange={(e) => setNewOption(e.target.value)}
-          className="block w-full border border-gray-300 rounded-md py-2 px-4 mb-2"
+          className="block w-full border border-gray-300 rounded-md py-2 px-4 mb-2 "
           placeholder="Enter option"
         />
         <button
@@ -104,7 +112,7 @@ const Question = () => {
         <div className="mt-4">
           {options.map((option, index) => (
             <div key={index} className="flex items-center mb-2">
-              <span className="mr-2">{option}</span>
+              <span className="mr-2 capitalize">{option}</span>
               <button
                 onClick={() => handleRemoveOption(index)}
                 className="text-red-500 hover:text-red-700 font-bold text-xl"
@@ -141,7 +149,7 @@ const Question = () => {
           <Spin />
         ) : (
           questions &&
-          Object.keys(questions).map((questionId) => {
+          Object.keys(questions).reverse().map((questionId) => {
             const { question, options } = questions[questionId];
             return (
               <div
@@ -149,18 +157,34 @@ const Question = () => {
                 className="mb-4 flex justify-between items-center"
               >
                 <div className="flex space-y-3 items-center flex-col">
-                  <p className="font-semibold capitalize">{question}</p>
-                  <ul className="list-disc ml-4 capitalize space-y-2">
+                  {editingQuestionId ? (
+                    <input
+                      type="text"
+                      value={newQuestion}
+                      onChange={(e) => setNewQuestion(e.target.value)}
+                      className="block w-full border border-gray-300 rounded-md py-2 px-4 mb-2"
+                    />
+                  ) : (
+                    <p className="font-semibold capitalize">{question}</p>
+                  )}
+                  <ul className="list-disc ml-4  space-y-2">
                     {options.map((option: string, index: any) => (
-                      <li key={index}>{option}</li>
+                      <li key={index} className="capitalize">
+                        {option}
+                      </li>
                     ))}
                   </ul>
                 </div>
                 <div>
-                  <EditOutlined
-                    onClick={() => handleUpdateQuestion(questionId)}
-                    style={{ marginRight: "10px", cursor: "pointer" }}
-                  />
+                  {editingQuestionId ? (
+                    <button onClick={handleUpdateQuestion}>Finish Edit</button>
+                  ) : (
+                    <EditOutlined
+                      onClick={() => setEditingQuestionId(questionId)}
+                      style={{ marginRight: "10px", cursor: "pointer" }}
+                    />
+                  )}
+
                   <DeleteOutlined
                     onClick={() => handleModal(questionId)}
                     style={{ cursor: "pointer" }}
@@ -177,7 +201,7 @@ const Question = () => {
         title="Confirmation"
         open={modalVisible}
         onOk={handleConfirmDelete}
-        onCancel={handleCancelDelete}
+        onCancel={() => setModalVisible(false)}
         okText="Yes"
         cancelText="No"
       >
