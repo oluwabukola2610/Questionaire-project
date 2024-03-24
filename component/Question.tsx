@@ -12,6 +12,8 @@ import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 const Question = () => {
   const { data: questions, isLoading } = useGetQuestionsQuery({});
   const [newQuestion, setNewQuestion] = useState("");
+  const [updateQuestion, setupdateQuestion] = useState("");
+
   const [newOption, setNewOption] = useState("");
   const [options, setOptions] = useState<string[]>([]);
   const [createQuestionAndOptions, { isLoading: isCreating }] =
@@ -71,10 +73,10 @@ const Question = () => {
   };
 
   const handleUpdateQuestion = () => {
-    if (newQuestion.trim() !== "") {
+    if (updateQuestion.trim() !== "") {
       const oldOptions = questions[editingQuestionId]?.options || [];
       update({
-        question: newQuestion,
+        question: updateQuestion,
         questionId: editingQuestionId,
         options: oldOptions,
       })
@@ -168,11 +170,11 @@ const Question = () => {
                     className="mb-4 flex justify-between items-center"
                   >
                     <div className="flex space-y-3 items-start flex-col">
-                      {editingQuestionId ? (
+                      {editingQuestionId === questionId ? (
                         <input
                           type="text"
-                          value={newQuestion}
-                          onChange={(e) => setNewQuestion(e.target.value)}
+                          value={updateQuestion}
+                          onChange={(e) => setupdateQuestion(e.target.value)}
                           className="block w-full border border-gray-300 rounded-md py-2 px-4 mb-2"
                         />
                       ) : (
@@ -199,13 +201,21 @@ const Question = () => {
                       </div>
                     </div>
                     <div className="flex space-x-3 items-center">
-                      {editingQuestionId ? (
-                        <button
-                          onClick={handleUpdateQuestion}
-                          className="bg-green-200 p-2 rounded-md"
-                        >
-                          Finish Edit
-                        </button>
+                      {editingQuestionId === questionId ? (
+                        <>
+                          <button
+                            onClick={handleUpdateQuestion}
+                            className="bg-green-200 p-2 rounded-md"
+                          >
+                            Finish Edit
+                          </button>
+                          <button
+                            onClick={()=>setEditingQuestionId("")}
+                            className="bg-gray-200 p-2 rounded-md"
+                          >
+                            cancel
+                          </button>
+                        </>
                       ) : (
                         <EditOutlined
                           onClick={() => setEditingQuestionId(questionId)}

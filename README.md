@@ -1,4 +1,6 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+QuestionTime (QT) Frontend
+This is the frontend application for QuestionTime (QT), a platform that allows registered users to set up and manage multiple-choice questions for public respondents. This project provides a user interface to make the question setup process easy.
+
 
 ## Getting Started
 
@@ -13,24 +15,35 @@ pnpm dev
 # or
 bun dev
 ```
+Clone this repository to your local machine
+npm install --save
+
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+when a new or returning user visits the QT frontend, they will be prompted to request a token.
+Enter the user's email address and click on the "Request Token" button.
+Upon successful submission, the token will be displayed on the screen and stored for subsequent use.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+Question Setup
 
-## Learn More
+Once the token is retrieved and stored, users can proceed to set up questions.
+Users can view existing questions and their configured options on the main screen.
+Users can create new questions by clicking on the "Create Question" button.
+Options can be added or removed from questions as needed.
+Questions must have a minimum of 3 options and a maximum of 5 options.
+Deployment
+The QuestionTime frontend can be deployed to various hosting platforms. One recommended option is to deploy on Vercel using the Vercel Platform.
 
-To learn more about Next.js, take a look at the following resources:
+Technologies Used
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Next.js
+React.js
+ReduxtoolkitQuery
+Tailwind CSS (for styling)
+AntDesign
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+Acknowledgements
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+This project was bootstrapped with create-next-app provided by Next.js.
+Special thanks to the backend engineers of QT for providing the API support.
