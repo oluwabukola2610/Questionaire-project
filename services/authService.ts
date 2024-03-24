@@ -1,6 +1,8 @@
 import { ApiSlice } from "./Api";
 
-const authSlice = ApiSlice.enhanceEndpoints({}).injectEndpoints({
+const authSlice = ApiSlice.enhanceEndpoints({
+  addTagTypes: ["questions" as const],
+}).injectEndpoints({
   endpoints: (builder) => ({
     registerToken: builder.mutation({
       query: (body) => ({
@@ -22,47 +24,27 @@ const authSlice = ApiSlice.enhanceEndpoints({}).injectEndpoints({
         method: "POST",
         body: { question, options },
       }),
-      async onQueryStarted({ id }, { dispatch, queryFulfilled }) {
-        try {
-          const { data: getQuestions } = await queryFulfilled;
-          const patchResult = dispatch(
-            authSlice.util.upsertQueryData("getQuestions", id, getQuestions)
-          );
-        } catch {}
-      },
+      invalidatesTags: ["questions"],
     }),
     deleteQuestion: builder.mutation({
       query: (questionId) => ({
         url: `questions/${questionId}`,
         method: "DELETE",
       }),
-      onQueryStarted({ id, ...patch }, { dispatch, queryFulfilled }) {
-        const patchResult = dispatch(
-          authSlice.util.updateQueryData("getQuestions", id, (draft) => {
-            Object.assign(draft, patch);
-          })
-        );
-        queryFulfilled.catch(patchResult.undo);
-      },
+      invalidatesTags: ["questions"],
     }),
 
     updateQuestion: builder.mutation({
-      query: ({ question, questionId }) => ({
+      query: ({ question, questionId, options }) => ({
         url: `questions/${questionId}`,
         method: "PUT",
-        body: { question, questionId },
+        body: { question, options },
       }),
-      onQueryStarted({ id, ...patch }, { dispatch, queryFulfilled }) {
-        const patchResult = dispatch(
-          authSlice.util.updateQueryData("getQuestions", id, (draft) => {
-            Object.assign(draft, patch);
-          })
-        );
-        queryFulfilled.catch(patchResult.undo);
-      },
+      invalidatesTags: ["questions"],
     }),
     getQuestions: builder.query({
       query: () => ({ url: "questions", method: "GET" }),
+      providesTags: ["questions"],
     }),
   }),
 });

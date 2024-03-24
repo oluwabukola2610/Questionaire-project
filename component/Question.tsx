@@ -71,15 +71,23 @@ const Question = () => {
   };
 
   const handleUpdateQuestion = () => {
-    update({ question: newQuestion, questionId: editingQuestionId })
-      .unwrap()
-      .then(() => {
-        message.success("Question updated successfully");
-        setEditingQuestionId("");
+    if (newQuestion.trim() !== "") {
+      const oldOptions = questions[editingQuestionId]?.options || [];
+      update({
+        question: newQuestion,
+        questionId: editingQuestionId,
+        options: oldOptions,
       })
-      .catch((error) => {
-        message.error(error?.message || "Error updating question");
-      });
+        .unwrap()
+        .then(() => {
+          message.success("Question updated successfully");
+          setEditingQuestionId("");
+          setNewQuestion("")
+        })
+        .catch((error) => {
+          message.error(error?.message || "Error updating question");
+        });
+    }
   };
 
   return (
@@ -149,50 +157,57 @@ const Question = () => {
           <Spin />
         ) : (
           questions &&
-          Object.keys(questions).reverse().map((questionId) => {
-            const { question, options } = questions[questionId];
-            return (
-              <div
-                key={questionId}
-                className="mb-4 flex justify-between items-center"
-              >
-                <div className="flex space-y-3 items-center flex-col">
-                  {editingQuestionId ? (
-                    <input
-                      type="text"
-                      value={newQuestion}
-                      onChange={(e) => setNewQuestion(e.target.value)}
-                      className="block w-full border border-gray-300 rounded-md py-2 px-4 mb-2"
-                    />
-                  ) : (
-                    <p className="font-semibold capitalize">{question}</p>
-                  )}
-                  <ul className="list-disc ml-4  space-y-2">
-                    {options.map((option: string, index: any) => (
-                      <li key={index} className="capitalize">
-                        {option}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div>
-                  {editingQuestionId ? (
-                    <button onClick={handleUpdateQuestion}>Finish Edit</button>
-                  ) : (
-                    <EditOutlined
-                      onClick={() => setEditingQuestionId(questionId)}
-                      style={{ marginRight: "10px", cursor: "pointer" }}
-                    />
-                  )}
+          Object.keys(questions)
+            .reverse()
+            .map((questionId) => {
+              const { question, options } = questions[questionId];
+              return (
+                <div
+                  key={questionId}
+                  className="mb-4 flex justify-between items-center"
+                >
+                  <div className="flex space-y-3 items-center flex-col">
+                    {editingQuestionId ? (
+                      <input
+                        type="text"
+                        value={newQuestion}
+                        onChange={(e) => setNewQuestion(e.target.value)}
+                        className="block w-full border border-gray-300 rounded-md py-2 px-4 mb-2"
+                      />
+                    ) : (
+                      <p className="font-semibold capitalize">{question}</p>
+                    )}
+                    <ul className="list-disc ml-4  space-y-2">
+                      {options?.map((option: string, index: any) => (
+                        <li key={index} className="capitalize">
+                          {option}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="flex space-x-3 items-center">
+                    {editingQuestionId ? (
+                      <button
+                        onClick={handleUpdateQuestion}
+                        className="bg-green-200 p-2 rounded-md"
+                      >
+                        Finish Edit
+                      </button>
+                    ) : (
+                      <EditOutlined
+                        onClick={() => setEditingQuestionId(questionId)}
+                        style={{ marginRight: "10px", cursor: "pointer" }}
+                      />
+                    )}
 
-                  <DeleteOutlined
-                    onClick={() => handleModal(questionId)}
-                    style={{ cursor: "pointer" }}
-                  />
+                    <DeleteOutlined
+                      onClick={() => handleModal(questionId)}
+                      style={{ cursor: "pointer" }}
+                    />
+                  </div>
                 </div>
-              </div>
-            );
-          })
+              );
+            })
         )}
       </div>
       <Modal
